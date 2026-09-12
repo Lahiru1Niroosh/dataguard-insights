@@ -2,12 +2,12 @@
 Phase B1 — Read-only data access layer.
 Connects to dataguard_meta using a dedicated read-only Postgres role
 (dataguard_readonly) — never dataguard-core's write credentials.
-This is a deliberate least-privilege security decision: Insights
-cannot modify Core's data even if there's a bug in this codebase.
+Uses SQLAlchemy's engine (not a raw psycopg2 connection) since
+that's what pandas.read_sql_query expects natively.
 """
 import os
 import pandas as pd
-import psycopg2
+from sqlalchemy import create_engine
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -18,22 +18,15 @@ DB_NAME = os.getenv("DATABASE_NAME", "dataguard")
 DB_USER = os.getenv("DATABASE_USER", "dataguard_readonly")
 DB_PASS = os.getenv("DATABASE_PASSWORD", "dataguard_readonly_pw")
 
-
-def get_conn():
-    return psycopg2.connect(
-        host=DB_HOST, port=DB_PORT, dbname=DB_NAME, user=DB_USER, password=DB_PASS
-    )
+_engine = create_engine(
+    f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+)
 
 
-def run_query(sql: str, params: tuple = None) -> pd.DataFrame:
+def run_query(sql: str, params: dict = None) -> pd.DataFrame:
     """
     Runs a SELECT query against dataguard_meta and returns a
     Pandas DataFrame. This is the single access point every
     query module in app/queries/ should go through.
     """
-    conn = get_conn()
-    try:
-        df = pd.read_sql_query(sql, conn, params=params)
-    finally:
-        conn.close()
-    return df
+    return pd.read_sql_query(sql, _engine, params=params)
