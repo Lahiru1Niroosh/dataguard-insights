@@ -251,6 +251,15 @@ def inject_base_styles():
         list-style: none !important;
     }}
 
+    /* Fix: pages without an emoji in the filename (like Home) get their
+       icon-span collapsed to near-zero width by Streamlit, hiding the
+       label text entirely. Force it to size to its content instead. */
+    [data-testid="stSidebarNav"] a span[label] {{
+        width: auto !important;
+        min-width: 100% !important;
+        overflow: visible !important;
+    }}
+
     /* Every link — same base, no exceptions */
     [data-testid="stSidebarNav"] a,
     [data-testid="stSidebarNav"] a:link,
@@ -322,8 +331,7 @@ def inject_base_styles():
     /* Icon / emoji alignment — same for every row */
     [data-testid="stSidebarNav"] a img,
     [data-testid="stSidebarNav"] a svg,
-    [data-testid="stSidebarNav"] a [data-testid*="Icon"],
-    [data-testid="stSidebarNav"] a > span:first-child {{
+    [data-testid="stSidebarNav"] a [data-testid*="Icon"] {{
         flex: 0 0 auto !important;
         width: 1.15rem !important;
         height: 1.15rem !important;
