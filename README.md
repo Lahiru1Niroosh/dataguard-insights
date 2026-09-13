@@ -5,6 +5,31 @@ reconciliation engine — translating row-level data discrepancies into business
 metrics: dollar exposure, affected accounts, integrity trends over time, and a
 data-driven executive summary written in plain language.
 
+## Data flow
+
+```mermaid
+flowchart LR
+  subgraph "DataGuard Core"
+    ENGINE[Reconciliation Engine] --> META[(dataguard_meta)]
+  end
+
+  META -- "SELECT-only<br/>(dataguard_readonly role)" --> DB[app/db.py]
+  DB --> QT[queries/trends.py]
+  DB --> QR[queries/risk.py]
+  DB --> QE[queries/executive_summary.py]
+
+  QT --> HOME[Home]
+  QT --> TRENDS[Trends]
+  QR --> EXPLORER[Discrepancy Explorer]
+  QE --> SUMMARY[Executive Summary]
+
+  style META fill:#2E5EAA,color:#fff
+  style DB fill:#3FA796,color:#000
+```
+
+*Insights never writes to `dataguard_meta` — the `dataguard_readonly` Postgres role
+is granted `SELECT` only, enforced at the database level, not just in application code.*
+
 ## Why this exists
 
 DataGuard Core detects and classifies data discrepancies between a banking system and
