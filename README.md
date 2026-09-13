@@ -5,6 +5,22 @@ reconciliation engine — translating row-level data discrepancies into business
 metrics: dollar exposure, affected accounts, integrity trends over time, and a
 data-driven executive summary written in plain language.
 
+## Screenshots
+
+**Home — live data integrity status**
+![Home page](screenshots/home.png)
+
+**Trends — integrity and dollar impact over time**
+![Trends page](screenshots/trends.png)
+
+**Discrepancy Explorer — drill into individual discrepancies and top accounts at risk**
+![Discrepancy Explorer page](screenshots/discrepancy-explorer.png)
+
+**Executive Summary — data-driven, plain-language reporting**
+![Executive Summary page](screenshots/executive-summary.png)
+
+**Live demo:** [https://dataguard-insights-cjf2jbrvhgsxpaup4zljkg.streamlit.app/](https://dataguard-insights-cjf2jbrvhgsxpaup4zljkg.streamlit.app/)
+
 ## Data flow
 
 ```mermaid
